@@ -10,6 +10,44 @@
 
 - 要跳转的目标不同，输入数据的要求不同
 - 在不同的场景配置，输出的格式也不同
+- 根据配置场景以及跳转目标，对应的规则如下：
+  - 第一步：配置目标地址所需要的数据，获取数据，输出 miniObj 对象
+    - appId path pageQuery bizParams webviewUrl
+    - => mini // 小程序链接
+  - 第二步：选择要配置的场景，计算转换到目标地址的规则过程
+    - aliapp
+      - => mini
+        - `pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
+      - tplmsg-mini // 支付宝模板消息 -> 支付宝小程序
+        - `pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
+      - life-mini // 支付宝生活号 -> 支付宝小程序
+        - `pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
+      - h5-mini // 生活号 -> 支付宝小程序
+        - => mini => alipays
+        - `alipays://platformapi/startApp?appId=${appId}&page=${mini.toString()}`
+      - sms-mini // 短信 -> 支付宝小程序
+        - => mini => alipays => h5
+        - `https://ds.alipay.com/?from=mobilecodec&scheme=${alipays.scheme}`
+      - mini-mini // 小程序间跳转
+        - `miniapp://pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
+    - wxapp
+      - mp-mini // 公众号 -> 微信小程序
+        - => mini => mp
+        - `pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
+      - tweet-mini // 推文 -> 微信小程序
+        - `pages/${path}/${path}.html?${stringify(pageQuery, bizParams)}`
+      - ad-mini // 广告投放 -> 微信小程序
+        - `/pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
+      - tplmsg-mini
+        - `/pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
+      - mini-mini // 小程序间跳转
+        - `miniapp://pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
+
+// alipays
+const alipays = {
+  h5: `https://ds.alipay.com/?from=mobilecodec&scheme=${alipays.scheme}`,
+  scheme: `alipays://platformapi/startApp?appId=${appId}&page=${miniapp.toString()}`,
+}
 
 {
   input: {
@@ -73,12 +111,6 @@ const miniapp = {
     return `${prefix}${pathname}?${stringify(pageQuery, bizParams)}`;
   },
 };
-
-// alipays
-const alipays = {
-  h5: ` https://ds.alipay.com/?from=mobilecodec&scheme=${alipays.scheme}`,
-  scheme: `alipays://platformapi/startApp?appId=${appId}&page=${miniapp.toString()}`,
-}
 
 ```
 
