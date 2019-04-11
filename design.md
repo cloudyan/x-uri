@@ -42,6 +42,20 @@
         - `/pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
       - mini-mini // 小程序间跳转
         - `miniapp://pages/${path}/${path}?${stringify(pageQuery, bizParams)}`
+  - 第三步：根据以上规则，代码实现流程
+    - => mini
+    - => alipays
+    - => h5
+- 界面实现
+  1. 小程序类别区分，支付宝和微信不互通，做 tab 切换
+  2. 输入配置场景
+  3. 选择目标地址
+  4. 输入要填写的数据
+  5. 得出结果 以及 二维码，便于测试
+  6. 提供短链接入口，方便跳转使用
+  7. 支持链接校验或链接反解析
+
+
 
 // alipays
 const alipays = {
